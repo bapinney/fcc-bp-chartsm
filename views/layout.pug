@@ -1,7 +1,14 @@
 doctype html
 html
-  head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    block content
+    head
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        title= title
+        script(src="http://code.jquery.com/jquery-2.2.4.min.js")
+        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS", crossorigin="anonymous") 
+        link(href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css", rel="stylesheet", integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7", crossorigin="anonymous")
+        link(rel='stylesheet', href='/stylesheets/style.css')
+        script(src="https://cdn.socket.io/socket.io-1.4.5.js")
+        script(src="/javascripts/script.js")
+    body
+        main(class="container")
+            block content

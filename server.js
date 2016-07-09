@@ -20,6 +20,10 @@ var users = require('./routes/users');
 
 console.log(chalk.bgBlue.white("Initializing Express..."));
 var app = express();
+var http = require('http').Server(app);
+
+console.log(chalk.bgBlue.white("Initializing Socket.IO..."));
+var io = require("socket.io")(http);
 
 // view engine setup
 
