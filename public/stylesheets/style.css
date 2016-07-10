@@ -27,6 +27,14 @@ header i {
     margin-right: 10px;
 }
 
+main {
+    border: 2px solid white;
+    border-radius: 10px;
+    background-color: hsl(0, 0%, 95%);
+    color: black;
+    margin: auto;
+}
+
 @keyframes rgbhues {
     0% {
         color: hsl(0, 80%, 80%);
@@ -39,12 +47,19 @@ header i {
     }
 }
 
-main {
-    border: 2px solid white;
-    border-radius: 10px;
-    background-color: hsl(0, 0%, 95%);
-    color: black;
-    margin: auto;
+#add_new {
+    background-color: rgba(0, 100, 0, .1);
+}
+
+#chart {
+    border: 1px dashed rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+    min-height: 300px;
+    
+}
+
+#chart_caption {
+    margin-bottom: 8px;
 }
 
 #chart_title {
@@ -53,4 +68,29 @@ main {
     text-shadow: 1px 1px 0px rgba(0,0,0,0.5);
     text-transform: uppercase;
     letter-spacing: 10px;
+}
+
+
+#stock_list > div {
+    border: 1px solid black;
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px black;
+    margin-left: 15px;
+    margin-bottom: 15px;
+    max-width: 285px;
+    min-height: 120px;
+    transition: all 300ms ease-in-out;
+}
+
+#stock_list > div:hover {
+    box-shadow: 0px 0px 2px 1px black;
+}
+
+#stock_list .close {
+    margin-right:-10px;
+}
+
+.stock_name {
+    font-family: 'Space Mono', monospace;
+    font-size: 24px;
 }
