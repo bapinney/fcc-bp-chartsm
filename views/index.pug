@@ -6,13 +6,10 @@ block content
   div(id="chart_caption") Stocks
   div(id="stock_list" class="row")
     div(class="col-md-4" id="add_new")
-        
+        input(id="input_add" type="text" placeholder="MSFT, GOOG, AAPL...")
+        button(id="button_add")
+            i(class="fa fa-plus-square" aria-hidden="true")
+            |  Add
     div(class="col-md-4")
         span(class="close") x
         div(class="stock_name") GOOG
-    div(class="col-md-4")
-        div(class="stock_name") AAPL
-    div(class="col-md-4")
-        div(class="stock_name") MSFT
-    div(class="col-md-4")
-        div(class="stock_name") HPQ
