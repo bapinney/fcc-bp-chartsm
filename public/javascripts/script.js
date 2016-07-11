@@ -1,8 +1,22 @@
 console.log("Script loaded");
 
 var stockList; //Global, for easy debugging...
+var socket;
+
 
 $(function() {
+    
+    socket = io.connect('ws://localhost:3000');
+    
+    socket.on("stockadd", function(stockSymbol) {
+        console.log(`Somebody just added a stock: ${stockSymbol}`);
+        addStock(stockSymbol);
+    });
+    
+    socket.on("stockremove", function(stockSymbol) {
+        console.log(`Somebody just removed a stock: ${stockSymbol}`);
+        //removeStock(stockSymbol);
+    });
     
     var errFlash = function() {
         $("#add_new")[0].style.backgroundColor = "#aa0000";
@@ -16,7 +30,9 @@ $(function() {
             errFlash();
             return false;
         }
-        addStock($("#input_add")[0].value);
+        var addedStock = $("#input_add")[0].value;
+        //addStock(addedStock); Let's instead wait for the emittion message return before adding this stock, since that will get echoed back from the server.
+        socket.emit('stockadd', addedStock);
         $("#input_add")[0].value = "";
     });
     
