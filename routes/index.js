@@ -15,7 +15,12 @@ io.on('connection', function(socket) {
         console.log(`Someone added a stock: ${stockSymbol}`);
         //Send that broadcast to everyone...
         io.emit('stockadd', stockSymbol);
-    })
+    });
+    socket.on('stockremove', function(stockSymbol) {
+        console.log(`Someone removed a stock: ${stockSymbol}`);
+        //Send that broadcast to everyone...
+        io.emit('stockremove', stockSymbol);
+    });
 });
 
 module.exports = router;
