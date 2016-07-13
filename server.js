@@ -15,6 +15,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var yahooFinance = require('yahoo-finance');
 var mongoose = require('mongoose');
+var stocklistSchema = require('./models/stocklist.js')
 
 console.log(chalk.bgYellow.black("Loading routes..."));
 var routes = require('./routes/index');

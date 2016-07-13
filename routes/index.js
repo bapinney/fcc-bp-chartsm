@@ -4,6 +4,8 @@ var chalk = require('chalk');
 console.log(chalk.bgBlue.white("Initializing Socket.IO..."));
 var io = require("socket.io")(3000);
 var yahooFinance = require('yahoo-finance');
+var mongoose = require('mongoose');
+var Stocklist = require('../models/stocklist.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -36,13 +38,44 @@ io.on('connection', function(socket) {
     console.log("Client connected.");
     socket.on('stockadd', function(stockSymbol) {
         console.log(`Someone added a stock: ${stockSymbol}`);
-        //Send that broadcast to everyone...
-        io.emit('stockadd', stockSymbol);
+        Stocklist.findOne({}, function(err, stocklist) {
+            if (err) {
+                console.error(err);
+            }
+            if (stocklist) {
+                stocklist.stocks.push(stockSymbol);
+                stocklist.save(function(err) {
+                    if (err) {
+                        console.error(err);
+                    }
+                    console.log(`Success adding symbol: ${stockSymbol}`);
+                    //Send that broadcast to everyone...
+                    io.emit('stockadd', stockSymbol);
+                });
+            }
+            else {
+                console.error("No stocklist document found...");
+            }
+        });        
     });
     socket.on('stockremove', function(stockSymbol) {
         console.log(`Someone removed a stock: ${stockSymbol}`);
-        //Send that broadcast to everyone...
-        io.emit('stockremove', stockSymbol);
+        Stocklist.findOne({}, function(err, stocklist) {
+            if (err) {
+                console.error(err);
+            }
+            if (stocklist) {
+                stocklist.stocks.pull(stockSymbol);
+                stocklist.save(function(err) {
+                    if (err) {
+                        console.error(err);
+                    }
+                    console.log(`Success removing symbol: ${stockSymbol}`);
+                    //Send that broadcast to everyone...
+                    io.emit('stockremove', stockSymbol);
+                })
+            }
+        })
     });
 });
 
