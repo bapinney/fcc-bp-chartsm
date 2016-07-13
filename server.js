@@ -2,7 +2,7 @@ console.log("Starting app...");
 var chalk = require("chalk");
 
 console.log(chalk.bgBlue.white("Loading config..."));
-require('./config/config.js');
+var config = require('./config/config.js');
 
 var port = process.env.PORT;
 
@@ -14,6 +14,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var yahooFinance = require('yahoo-finance');
+var mongoose = require('mongoose');
 
 console.log(chalk.bgYellow.black("Loading routes..."));
 var routes = require('./routes/index');
@@ -21,9 +22,14 @@ var users = require('./routes/users');
 
 console.log(chalk.bgBlue.white("Initializing Express..."));
 var app = express();
+if (process.env.APP_ENV === "development") {
+    console.log(chalk.bgBlue.white("App environment is DEVELOPMENT"));
+    app.set('env', 'development');
+}
 var http = require('http').Server(app);
 
 // view engine setup
+
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -70,8 +76,21 @@ app.use(function(err, req, res, next) {
   });
 });
 
-app.listen(port, function() {
-    console.log(chalk.bgGreen.white(`Listening on port: ${port}`));
-}) 
+console.log(chalk.bgYellow.black("Connecting to MongoDB..."));
+mongoose.connect(process.env.MONGO_URI);
+global.db = mongoose.connection;
+
+global.db.on('error', function(error) {
+    console.error("Mongoose connection error: ");
+    console.dir(error);
+    console.log("Exiting...");
+});
+
+global.db.once('open', function () {
+    console.log(chalk.bgGreen.black("Connected to MongoDB."));
+    app.listen(port, function() {
+        console.log(chalk.bgGreen.black(`Listening on port ${port}.`));
+    });
+});
 
 module.exports = app;

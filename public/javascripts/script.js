@@ -1,8 +1,9 @@
 console.log("Script loaded");
 
-var stockList; //Global, for easy debugging...
+var stockList; //Globals, for easy debugging...
 var socket;
 var parEle;
+var stockArr;
 
 $(function() {
     
@@ -48,6 +49,24 @@ $(function() {
             $("#button_add")[0].click();
         }
     });
+    
+    $("#button_refresh").click(function() {
+        console.info("%c Refresh clicked...", "color:green;");
+        var stockElems = $(".stock_name").contents();
+        var stockObj = {};
+        var n = 1;
+        for (var i=0; i<stockElems.length; i++) {
+            stockObj["stock_" + i] = stockElems[i].textContent;
+        }
+        $.ajax({
+            method: "POST",
+            data: stockObj,
+            url: "fetchCharts"
+        })
+        .done(function(msg) {
+            console.log("AJAX DONE");
+        });
+    })
 
     var addStock = function(symbol) {
         var newDiv = $('<div class="col-md-4"></div>');
