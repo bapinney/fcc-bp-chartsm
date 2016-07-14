@@ -32,7 +32,23 @@ router.post('/fetchCharts', function(req, res, next) {
         res.json(quotes);
     });
     */
-})
+});
+
+// Returns the stocks currently added
+router.get('/fetchStocks', function(req, res, next) {
+    Stocklist.findOne({}, function(err, stocklist) {
+        if (err) {
+            console.error(err);
+        }
+        if (stocklist.stocks) {
+            var jsonStr = {}; //Empty object for AJAX
+            for (var i=0; i<stocklist.stocks.length; i++) {
+                jsonStr[i] = stocklist.stocks[i];
+            }
+            res.json(jsonStr);
+        }
+    })
+});
 
 io.on('connection', function(socket) {
     console.log("Client connected.");

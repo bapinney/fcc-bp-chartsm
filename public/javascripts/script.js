@@ -3,9 +3,25 @@ console.log("Script loaded");
 var stockList; //Globals, for easy debugging...
 var socket;
 var parEle;
-var stockArr;
+var stocksObj;
 
 $(function() {
+    
+    console.log("Fetching symbols...");
+    
+    $.ajax({
+        method: "GET",
+        url: "/fetchStocks"
+    })
+    .done(function(data) {
+        console.log(data);
+        stocksObj = data;
+        var objKeys = Object.keys(data);
+        var objLength = objKeys.length;
+        for (var i=0; i<objLength; i++) {
+            addStock(data[objKeys[i]]);
+        }
+    });
     
     socket = io.connect('ws://localhost:3000');
     
