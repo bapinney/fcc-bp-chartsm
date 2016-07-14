@@ -4,6 +4,7 @@ var stockList; //Globals, for easy debugging...
 var socket;
 var parEle;
 var stocksObj;
+var stocksArr = [];
 
 $(function() {
     
@@ -85,6 +86,10 @@ $(function() {
     })
 
     var addStock = function(symbol) {
+        if (stocksArr.indexOf(symbol) !== -1) {
+            console.info(`Stock ${symbol} already added.`);
+            return false; 
+        }
         var newDiv = $('<div class="col-md-4"></div>');
         newDiv.append('<span class="close">x</span>');
         var stockDiv = $('<div class="stock_name"></div>');
@@ -99,7 +104,11 @@ $(function() {
     }
     
     var updateStockList = function() {
-        stockList = $(".stock_name").contents();
+        stocksArr = [];
+        var stockList = $(".stock_name");
+        for (var i=0; i < stockList.length; i++) {
+            stocksArr.push(stockList[i].innerText);
+        }
     };
     
 });

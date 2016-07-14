@@ -22,16 +22,23 @@ router.post('/fetchCharts', function(req, res, next) {
         queryArr.push(req.body[objKeys[i]]);
     }
     console.log(queryArr);
-    /*
+    
+    var tmpDate = new Date();
+    var fromDate = tmpDate.setDate(tmpDate.getDate() - 30);
+    console.log("fromDate is " + fromDate);
+    var fromDateFormatted = new Date(fromDate).toISOString().split("T")[0];
+    console.log("fromDateFormatted is " + fromDateFormatted);
+    var toDateFormatted = (new Date()).toISOString().split("T")[0];
+    console.log("toDateFormatted is " + toDateFormatted);
+    
     yahooFinance.historical({
         symbols: queryArr,
-        from: '2012-01-01',
-        to: '2012-12-31',
-        // period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only)
+        from: fromDateFormatted,
+        to: toDateFormatted,
+        period: 'd'
     }, function (err, quotes) {
         res.json(quotes);
     });
-    */
 });
 
 // Returns the stocks currently added
@@ -54,11 +61,16 @@ io.on('connection', function(socket) {
     console.log("Client connected.");
     socket.on('stockadd', function(stockSymbol) {
         console.log(`Someone added a stock: ${stockSymbol}`);
-        Stocklist.findOne({}, function(err, stocklist) {
+        Stocklist.findOne(
+            {
+                stocks: { $nin: [stockSymbol] }, //$nin = NOT IN
+                name: "stock-list" 
+            }, function(err, stocklist) {
             if (err) {
                 console.error(err);
             }
             if (stocklist) {
+                console.log(`${stockSymbol} is not in the array, yet`);
                 stocklist.stocks.push(stockSymbol);
                 stocklist.save(function(err) {
                     if (err) {
@@ -70,7 +82,7 @@ io.on('connection', function(socket) {
                 });
             }
             else {
-                console.error("No stocklist document found...");
+                console.error("No document found...");
             }
         });        
     });
