@@ -1,15 +1,18 @@
 extends layout
 
 block content
-  div(id="chart_title") Stocks
-  div(id="chart")
-  div(id="chart_caption") Stocks
-  div(id="stock_list" class="row")
-    div(class="col-md-4" id="add_new")
-        input(id="input_add" type="text" placeholder="MSFT, GOOG, AAPL...")
-        button(id="button_add")
-            i(class="fa fa-plus-square" aria-hidden="true")
-            |  Add
-        button(id="button_refresh")
-            i(class="fa fa-refresh" aria-hidden="true")
-            |  Refresh
+    div(id="chart_title") Stocks
+    svg(id="chart")
+    div(id="chart_caption") Stocks
+        button(id="button_fetch")
+            i(class="fa fa-cloud-download" aria-hidden="true")
+            |  Fetch Data
+        button(id="button_draw")
+            i(class="fa fa-line-chart" aria-hidden="true")
+            |  Draw Chart
+    div(id="stock_list" class="row")
+        div(class="col-md-4" id="add_new")
+            input(id="input_add" type="text" placeholder="MSFT, GOOG, AAPL...")
+            button(id="button_add")
+                i(class="fa fa-plus-square" aria-hidden="true")
+                |  Add Stock

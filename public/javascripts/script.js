@@ -5,6 +5,19 @@ var socket;
 var parEle;
 var stocksObj;
 var stocksArr = [];
+var chartData;
+
+var chart;
+var cMargin;
+var cWidth;
+var cHeight;
+
+var x;
+var xAxis;
+
+var y;
+var yAxis;
+var yDomain;
 
 $(function() {
     
@@ -80,8 +93,11 @@ $(function() {
             data: stockObj,
             url: "fetchCharts"
         })
-        .done(function(msg) {
+        .done(function(data) {
             console.log("AJAX DONE");
+            console.dir(data);
+            chartData = data;
+            console.info("%c Chart data copied to chartData", "color:blue; font-size:14px;")
         });
     })
 
@@ -111,4 +127,121 @@ $(function() {
         }
     };
     
+    
+    
+    //chartInit();
+    
 });
+
+var yDomain = [0, 100];
+var tickerSymbols;
+var yMin;
+var yMax;
+var interval;
+var intervalMultiple;
+
+var chartInit = function() {
+    console.log("chartInit called");
+    console.info("D3 version is " + d3.version);
+
+    console.log("Checking for chartData...");
+    if (
+        typeof chartData == "object" &&
+        Object.keys(chartData).length > 1
+       ) 
+    {
+        console.log("%c chartData is defined with 1 or more keys", "color:green;");
+    }
+    else {
+        console.error("%c chartData is not defined with 1 or more keys.  Unable to chartInit().", "color:red; font-size:16px;");
+        return false;
+    }
+    
+    console.log("Compiling X domain...");
+    var fromDate = new Date(chartData[Object.keys(chartData)[0]][0].date);
+    var toDate = new Date(chartData[Object.keys(chartData)[0]][(chartData[Object.keys(chartData)[0]].length - 1)].date);
+    var xDomain = [fromDate, toDate];
+    console.dir(xDomain);
+    
+    console.log("Compiling Y domain...");
+    tickerSymbols = Object.keys(chartData);
+    
+    //Init with the first values in the first stock, and go from there...
+    var yMin = chartData[tickerSymbols[0]][0].low;
+    var yMax = chartData[tickerSymbols[0]][0].high;    
+    console.log(`yMin is ${yMin} and yMax is ${yMax}`);
+    
+    for (var i=0; i<tickerSymbols.length; i++) {
+        console.log(`At symbol ${tickerSymbols[i]}`);
+        var symLength = chartData[tickerSymbols[i]].length;
+        //console.log(`symLength is ${symLength}`);
+        for (var i2=0; i2<symLength; i2++) {
+            if(chartData[tickerSymbols[i]][i2].low < yMin) {
+                yMin = chartData[tickerSymbols[i]][i2].low;
+            }
+            if(chartData[tickerSymbols[i]][i2].high > yMax) {
+                yMax = chartData[tickerSymbols[i]][i2].high;
+            }
+        }
+    }
+    
+    console.log(`yMin is ${yMin} and yMax is ${yMax}`);
+    
+    var intervalMultiple = 25; //Means that intervals should be in multiples of 25 (e.g., 25, 50, 75, etc...)
+    
+    var interval = intervalMultiple * Math.ceil((yMax/yMin)/intervalMultiple);
+    
+    console.log(`interval is ${interval}`);
+    
+    if (yMin < interval) {
+        var yStart = 0;
+    }
+    else {
+        var yStart = Math.floor(yMin/interval) * interval;
+    }
+    
+    var yEnd = interval*10;
+    
+    console.log(`yStart is ${yStart} and yEnd is ${yEnd}`);
+    
+    yDomain = [yStart, yEnd];
+    
+    console.log(`yDomain is ${yDomain}`);
+    
+    $("#chart").empty();
+    
+    chart = $("#chart")[0];
+    console.dir(chart);
+
+    //Margins, which we'll subtract from the 'c'ontainer dimensions defined in CSS
+    var cMargin = {top: 20, right: 20, bottom: 10, left: 50};
+    cHeight = chart.clientHeight - cMargin.top - cMargin.bottom;
+    cWidth = chart.clientWidth - cMargin.left - cMargin.right;
+
+    //d3.time.scale() in v3 is d3.scaleTime() in v4
+    console.log("D3.time is " + typeof d3.scaleTime);
+
+    x = d3.scaleTime().domain(xDomain).range([0, cWidth]);
+    //x.ticks(5);
+    //x.tickFormat("s");
+    
+    xAxis = d3.axisBottom(x).tickFormat(d3.timeFormat("%b %d"));
+
+    y = d3.scaleLinear().domain(yDomain).range([cHeight, 0]);
+    yAxis = d3.axisLeft(y);
+
+    //Remember, you have to use .append on D3 selections, in order for it to work correctly...
+
+    // *** X ***
+    d3.select(chart).append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(" + cMargin.left + "," + cHeight + ")")
+        .call(xAxis);
+
+    // *** Y ***
+    d3.select(chart).append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(" + (cMargin.left) + ", " + (0) + ")")
+        .call(yAxis);
+
+};

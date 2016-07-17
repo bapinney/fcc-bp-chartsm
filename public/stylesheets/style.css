@@ -60,18 +60,39 @@ main {
 }
 
 #add_new button {
-    background-color: darkgreen;
-    color: white;
+    background-color: hsl(120, 100%, 95%);
+    border-color: hsl(120, 100%, 95%);
+    color: black;
+    margin-top: 10px;
 }
+
+#button_draw {
+    background-color: hsl(60, 100%, 95%);
+    border-color: hsl(60, 100%, 95%);
+}
+
+#button_fetch {
+    background-color: hsl(180, 100%, 95%);
+    border-color: hsl(180, 100%, 95%);
+}
+
+
 
 #chart {
     border: 1px dashed rgba(0,0,0,0.2);
+    display: block; /* Useful if the container is an SVG instead of a DIV */
     margin-bottom: 20px;
     min-height: 300px;
+    width: 100%; /* Useful if container is an SVG instead of a DIV */
 }
 
 #chart_caption {
     margin-bottom: 8px;
+}
+
+#chart_caption button {
+    border-radius: 4px;
+    margin-left: 10px;
 }
 
 #chart_title {

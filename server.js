@@ -90,6 +90,7 @@ global.db.on('error', function(error) {
 global.db.once('open', function () {
     console.log(chalk.bgGreen.black("Connected to MongoDB."));
     app.listen(port, function() {
+        process.stdout.write('\x07'); //BEEP
         console.log(chalk.bgGreen.black(`Listening on port ${port}.`));
     });
 });
