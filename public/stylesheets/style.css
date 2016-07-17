@@ -60,20 +60,20 @@ main {
 }
 
 #add_new button {
-    background-color: hsl(120, 100%, 95%);
-    border-color: hsl(120, 100%, 95%);
+    background-color: hsl(120, 50%, 95%);
+    border-color: hsl(120, 50%, 95%);
     color: black;
     margin-top: 10px;
 }
 
 #button_draw {
-    background-color: hsl(60, 100%, 95%);
-    border-color: hsl(60, 100%, 95%);
+    background-color: hsl(60, 50%, 95%);
+    border-color: hsl(60, 50%, 95%);
 }
 
 #button_fetch {
-    background-color: hsl(180, 100%, 95%);
-    border-color: hsl(180, 100%, 95%);
+    background-color: hsl(180, 50%, 95%);
+    border-color: hsl(180, 50%, 95%);
 }
 
 
@@ -121,6 +121,36 @@ main {
 
 #stock_list .close {
     margin-right:-10px;
+}
+
+.data_pending:after {
+  content: "\f017"; 
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  text-decoration: inherit;
+  position: absolute;
+  font-size: 100px;
+  color: hsla(50,50%,50%,.2);
+  top: 50%;
+  left: 50%;
+  margin: -50px 0 0 -50px;
+  z-index: 1;
+}
+
+.data_ready:after {
+  content: "\f05d"; 
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  text-decoration: inherit;
+  position: absolute;
+  font-size: 100px;
+  color: hsla(100,50%,50%,.2);
+  top: 50%;
+  left: 50%;
+  margin: -50px 0 0 -50px;
+  z-index: 1;
 }
 
 .stock_name {

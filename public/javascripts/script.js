@@ -19,7 +19,7 @@ var y;
 var yAxis;
 var yDomain;
 
-$(function() {
+$(function() { //Document ready
     
     console.log("Fetching symbols...");
     
@@ -64,23 +64,24 @@ $(function() {
     });
     
     $("#button_add").click(function() {
-        if ($("#input_add")[0].value == 0) {
+        if ($("#input_add")[0].value.length == 0) {
             errFlash();
             return false;
         }
         var addedStock = $("#input_add")[0].value;
-        //addStock(addedStock); Let's instead wait for the emittion message return before adding this stock, since that will get echoed back from the server.
+        
+        //addStock(addedStock); Let's instead wait for the emittion message return before adding this stock, since that will get echoed back from the server (and we'll be sure our stock was really added).
         socket.emit('stockadd', addedStock);
         $("#input_add")[0].value = "";
     });
     
     $("#input_add").keypress(function(e) {
-        if (e.keyCode === 13) {
+        if (e.keyCode === 13) { //Enter key
             $("#button_add")[0].click();
         }
     });
     
-    $("#button_refresh").click(function() {
+    $("#button_fetch").click(function() {
         console.info("%c Refresh clicked...", "color:green;");
         var stockElems = $(".stock_name").contents();
         var stockObj = {};
@@ -98,8 +99,23 @@ $(function() {
             console.dir(data);
             chartData = data;
             console.info("%c Chart data copied to chartData", "color:blue; font-size:14px;")
+            updateStockStatus();    
         });
     })
+    
+    //Update the UI feedback for stocks to show if data is pending or ready
+    var updateStockStatus = function() {
+        console.log("updateStockStatus called...");
+        for (var i=0; i<$(".stock_name").length; i++) {
+            var curSymbol = $(".stock_name")[i].innerText;
+            console.log(`curSymbol is ${curSymbol}`);
+            if (chartData.hasOwnProperty(curSymbol) &&
+                chartData[curSymbol].length > 0) 
+            {
+                $($(".stock_name")[i].parentElement).removeClass("data_pending").addClass("data_ready");
+            }
+        }
+    };
 
     var addStock = function(symbol) {
         if (stocksArr.indexOf(symbol) !== -1) {
@@ -111,6 +127,17 @@ $(function() {
         var stockDiv = $('<div class="stock_name"></div>');
         stockDiv[0].innerText = symbol;
         newDiv.append(stockDiv);
+        if (
+            typeof chartData == "undefined" ||
+            !chartData.hasOwnProperty(symbol) ||
+            chartData[symbol].length == 0
+           )
+        {
+            newDiv.addClass("data_pending");
+        }
+        else {
+            newDiv.addClass("data_ready");            
+        }
         $('#stock_list').append(newDiv);
         updateStockList();
     };
@@ -139,6 +166,7 @@ var yMin;
 var yMax;
 var interval;
 var intervalMultiple;
+var stockLine;
 
 var chartInit = function() {
     console.log("chartInit called");
@@ -229,6 +257,11 @@ var chartInit = function() {
 
     y = d3.scaleLinear().domain(yDomain).range([cHeight, 0]);
     yAxis = d3.axisLeft(y);
+    
+    stockLine = d3.svg.line()
+        .x(function(d) {
+            return x()
+        })
 
     //Remember, you have to use .append on D3 selections, in order for it to work correctly...
 
