@@ -153,6 +153,21 @@ main {
   z-index: 1;
 }
 
+.data_unavailable:after {
+  content: "\f05c"; 
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  text-decoration: inherit;
+  position: absolute;
+  font-size: 100px;
+  color: hsla(0,50%,50%,.2);
+  top: 50%;
+  left: 50%;
+  margin: -50px 0 0 -50px;
+  z-index: 1;
+}
+
 .stock_name {
     font-family: 'Space Mono', monospace;
     font-size: 24px;

@@ -109,10 +109,19 @@ $(function() { //Document ready
         for (var i=0; i<$(".stock_name").length; i++) {
             var curSymbol = $(".stock_name")[i].innerText;
             console.log(`curSymbol is ${curSymbol}`);
+            
+            //We have the symbol and results
             if (chartData.hasOwnProperty(curSymbol) &&
                 chartData[curSymbol].length > 0) 
             {
                 $($(".stock_name")[i].parentElement).removeClass("data_pending").addClass("data_ready");
+            }
+            
+            //We have the symbol, but no data was returned
+            if (chartData.hasOwnProperty(curSymbol) &&
+                chartData[curSymbol].length === 0) 
+            {
+                $($(".stock_name")[i].parentElement).removeClass("data_pending").addClass("data_unavailable");
             }
         }
     };
