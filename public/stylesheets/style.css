@@ -168,6 +168,12 @@ main {
   z-index: 1;
 }
 
+.stock_line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 1.8px;
+}
+
 .stock_name {
     font-family: 'Space Mono', monospace;
     font-size: 24px;

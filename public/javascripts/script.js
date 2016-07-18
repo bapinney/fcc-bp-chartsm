@@ -75,6 +75,10 @@ $(function() { //Document ready
         $("#input_add")[0].value = "";
     });
     
+    $("#button_draw").click(function() {
+        chartInit();
+    })
+    
     $("#input_add").keypress(function(e) {
         if (e.keyCode === 13) { //Enter key
             $("#button_add")[0].click();
@@ -267,9 +271,13 @@ var chartInit = function() {
     y = d3.scaleLinear().domain(yDomain).range([cHeight, 0]);
     yAxis = d3.axisLeft(y);
     
-    stockLine = d3.svg.line()
+    //Remember, in D3v4, it is d3.line and NOT d3.svg.line
+    stockLine = d3.line()
         .x(function(d) {
-            return x()
+            return x(d.date);
+        })
+        .y(function(d) {
+            return y(d.close);
         })
 
     //Remember, you have to use .append on D3 selections, in order for it to work correctly...
@@ -285,5 +293,10 @@ var chartInit = function() {
         .attr("class", "y axis")
         .attr("transform", "translate(" + (cMargin.left) + ", " + (0) + ")")
         .call(yAxis);
+    
+    d3.select(chart).append("path")
+    .datum(chartData[0])
+    .attr("class", "line")
+    .attr("d", stockLine);
 
 };
