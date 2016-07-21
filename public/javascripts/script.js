@@ -21,6 +21,8 @@ var yDomain;
 
 $(function() { //Document ready
     
+    $('.tooltip-wrapper').tooltip(); //Turn on Bootstrap tooltips...
+    
     console.log("Fetching symbols...");
     
     $.ajax({
@@ -119,6 +121,8 @@ $(function() { //Document ready
                 chartData[curSymbol].length > 0) 
             {
                 $($(".stock_name")[i].parentElement).removeClass("data_pending").addClass("data_ready");
+                allowDraw();
+                
             }
             
             //We have the symbol, but no data was returned
@@ -129,6 +133,13 @@ $(function() { //Document ready
             }
         }
     };
+    
+    var allowDraw = function() {
+        $("#draw_warning").removeClass("disabled");
+        $("#button_draw").removeAttr("disabled");
+        //Removes the Bootstrap tooltip warning a chart cannot be drawn before data is fetched
+        $('#draw_warning').tooltip('disable');
+    }
 
     var addStock = function(symbol) {
         if (stocksArr.indexOf(symbol) !== -1) {
@@ -173,6 +184,7 @@ $(function() { //Document ready
     
 });
 
+var colors;
 var yDomain = [0, 100];
 var tickerSymbols;
 var yMin;
@@ -188,7 +200,7 @@ var chartInit = function() {
     console.log("Checking for chartData...");
     if (
         typeof chartData == "object" &&
-        Object.keys(chartData).length > 1
+        Object.keys(chartData).length > 0
        ) 
     {
         console.log("%c chartData is defined with 1 or more keys", "color:green;");
@@ -197,6 +209,8 @@ var chartInit = function() {
         console.error("%c chartData is not defined with 1 or more keys.  Unable to chartInit().", "color:red; font-size:16px;");
         return false;
     }
+    
+    colors = d3.scaleOrdinal(d3.schemeCategory10);
     
     console.log("Compiling X domain...");
     var fromDate = new Date(chartData[Object.keys(chartData)[0]][0].date);
@@ -210,7 +224,7 @@ var chartInit = function() {
     //Init with the first values in the first stock, and go from there...
     var yMin = chartData[tickerSymbols[0]][0].low;
     var yMax = chartData[tickerSymbols[0]][0].high;    
-    console.log(`yMin is ${yMin} and yMax is ${yMax}`);
+    console.log(`INITIAL yMin is ${yMin} and yMax is ${yMax}`);
     
     for (var i=0; i<tickerSymbols.length; i++) {
         console.log(`At symbol ${tickerSymbols[i]}`);
@@ -226,9 +240,9 @@ var chartInit = function() {
         }
     }
     
-    console.log(`yMin is ${yMin} and yMax is ${yMax}`);
+    console.log(`FINAL yMin is ${yMin} and yMax is ${yMax}`);
     
-    var intervalMultiple = 25; //Means that intervals should be in multiples of 25 (e.g., 25, 50, 75, etc...)
+    var intervalMultiple = 5; //Means that intervals should be in multiples of 25 (e.g., 25, 50, 75, etc...)
     
     var interval = intervalMultiple * Math.ceil((yMax/yMin)/intervalMultiple);
     
@@ -241,7 +255,8 @@ var chartInit = function() {
         var yStart = Math.floor(yMin/interval) * interval;
     }
     
-    var yEnd = interval*10;
+    //var yEnd = yStart + (interval*11);
+    var yEnd = Math.ceil(yMax/interval) * interval;
     
     console.log(`yStart is ${yStart} and yEnd is ${yEnd}`);
     
@@ -251,17 +266,18 @@ var chartInit = function() {
     
     $("#chart").empty();
     
-    chart = $("#chart")[0];
+    //chart = $("#chart")[0];
+    chart = d3.select("#chart");
     console.dir(chart);
 
+    var chartDOM = $("#chart")[0];
     //Margins, which we'll subtract from the 'c'ontainer dimensions defined in CSS
     var cMargin = {top: 20, right: 20, bottom: 10, left: 50};
-    cHeight = chart.clientHeight - cMargin.top - cMargin.bottom;
-    cWidth = chart.clientWidth - cMargin.left - cMargin.right;
-
+    cHeight = chartDOM.clientHeight - cMargin.top - cMargin.bottom;
+    cWidth = chartDOM.clientWidth - cMargin.left - cMargin.right;
+    console.log(`cHeight is ${cHeight} and cWidth is ${cWidth}`);
+    
     //d3.time.scale() in v3 is d3.scaleTime() in v4
-    console.log("D3.time is " + typeof d3.scaleTime);
-
     x = d3.scaleTime().domain(xDomain).range([0, cWidth]);
     //x.ticks(5);
     //x.tickFormat("s");
@@ -273,30 +289,48 @@ var chartInit = function() {
     
     //Remember, in D3v4, it is d3.line and NOT d3.svg.line
     stockLine = d3.line()
-        .x(function(d) {
-            return x(d.date);
-        })
-        .y(function(d) {
-            return y(d.close);
-        })
+    .x(function(d) {
+        return x(new Date(d.date));
+    })
+    .y(function(d) {
+        return y(d.close);
+    });
 
     //Remember, you have to use .append on D3 selections, in order for it to work correctly...
 
     // *** X ***
-    d3.select(chart).append("g")
+    chart.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(" + cMargin.left + "," + cHeight + ")")
         .call(xAxis);
 
     // *** Y ***
-    d3.select(chart).append("g")
+    chart.append("g")
         .attr("class", "y axis")
         .attr("transform", "translate(" + (cMargin.left) + ", " + (0) + ")")
         .call(yAxis);
     
-    d3.select(chart).append("path")
-    .datum(chartData[0])
-    .attr("class", "line")
-    .attr("d", stockLine);
+    console.log("Drawing paths for stocks...");
+    
+    var fooMo = function() {
+        var d3Ele = d3.select(this);
+        console.dir(d3Ele);
+    }
+    
+    for (var i=0; i<tickerSymbols.length; i++) {
+        if (chartData[tickerSymbols[i]].length > 0) {
+            console.log("Drawing line " + (i + 1 + "..."));
+            chart.append("path")
+            .datum(chartData[tickerSymbols[i]])
+            .attr("class", "stock_line")
+            //Remember, we need to do a transform on the data, since everything else is also translated +50 on the xAxis
+            .attr("transform", "translate("+ (cMargin.left) + ", " + (0) + ")")
+            .attr("d", stockLine)
+            .style("stroke", function(d) { return colors(i); })
+            .on("mouseover", fooMo);
+            ;
+        }
+    }
+
 
 };

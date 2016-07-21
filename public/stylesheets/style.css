@@ -67,16 +67,25 @@ main {
 }
 
 #button_draw {
-    background-color: hsl(60, 50%, 95%);
-    border-color: hsl(60, 50%, 95%);
+    background-color: hsl(120, 50%, 95%);
+    border-color: hsl(120, 50%, 95%);
+    box-shadow: 0px 0px 2px 2px darkgreen;
+    transition: all 300ms ease-in-out;
+}
+
+#button_draw:disabled {
+    background-color: hsl(0, 50%, 95%);
+    border-color: hsl(0, 50%, 95%);
+    box-shadow: none;
+    color: darkgray;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 #button_fetch {
     background-color: hsl(180, 50%, 95%);
     border-color: hsl(180, 50%, 95%);
 }
-
-
 
 #chart {
     border: 1px dashed rgba(0,0,0,0.2);
@@ -138,19 +147,27 @@ main {
   z-index: 1;
 }
 
+.data_ready {
+    background-color: hsla(100,75%, 75%, .2);
+}
+
+.data_pending {
+    background-color: hsla(50,75%,75%,.2);
+}
+
 .data_ready:after {
-  content: "\f05d"; 
-  font-family: FontAwesome;
-  font-style: normal;
-  font-weight: normal;
-  text-decoration: inherit;
-  position: absolute;
-  font-size: 100px;
-  color: hsla(100,50%,50%,.2);
-  top: 50%;
-  left: 50%;
-  margin: -50px 0 0 -50px;
-  z-index: 1;
+    content: "\f05d"; 
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    position: absolute;
+    font-size: 100px;
+    color: hsla(100,50%,50%,.2);
+    top: 50%;
+    left: 50%;
+    margin: -50px 0 0 -50px;
+    z-index: 1;
 }
 
 .data_unavailable:after {
@@ -170,11 +187,24 @@ main {
 
 .stock_line {
     fill: none;
-    stroke: steelblue;
     stroke-width: 1.8px;
 }
 
 .stock_name {
     font-family: 'Space Mono', monospace;
     font-size: 24px;
+}
+
+.tooltip > .tooltip-inner {
+    background-color:black;
+    border: 1px solid white;
+    color: white;
+}
+
+.tooltip-wrapper {
+    display: inline-block; /* prevents our button and/or tooltip from wrapping to the next line */
+}
+
+.tooltip-wrapper #button_draw[disabled] {
+    pointer-events: none; /* This will prevent the disabled button from blocking the mouse events from bubbling up to the wrapper */
 }

@@ -7,9 +7,10 @@ block content
         button(id="button_fetch")
             i(class="fa fa-cloud-download" aria-hidden="true")
             |  Fetch Data
-        button(id="button_draw")
-            i(class="fa fa-line-chart" aria-hidden="true")
-            |  Draw Chart
+        div(class="tooltip-wrapper disabled" data-title="Some stock data must be fetched before a chart can be drawn" data-placement="top" id="draw_warning")
+            button(id="button_draw" disabled)
+                i(class="fa fa-line-chart" aria-hidden="true")
+                |  Draw Chart
     div(id="stock_list" class="row")
         div(class="col-md-4" id="add_new")
             input(id="input_add" type="text" placeholder="MSFT, GOOG, AAPL...")
