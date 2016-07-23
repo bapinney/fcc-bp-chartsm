@@ -174,6 +174,12 @@ $(function() { //Document ready
     
     var removeStock = function(symbol) {
         $(`.stock_name:contains(${symbol})`)[0].parentElement.remove();
+        var symIndex = stocksArr.indexOf(symbol);
+        console.log(typeof symIndex);
+        if (typeof symIndex == "number") {
+            console.log(`Removed ${symbol} from stocksArr`);
+            stocksArr.splice(symIndex, 1);
+        }
     }
     
     var updateStockList = function() {
@@ -353,9 +359,16 @@ var chartInit = function() {
         //This is the "X" value the cursor is hovered over.  Remember, from chartInit(), these are Date objects
         var x0 = d3.mouse(this)[0];
         var y0 = d3.mouse(this)[1];
+        var yd;
+        if (y0 < $("#chart")[0].height.baseVal.value/2) {
+            yd = y0+15;
+        }
+        else {
+            yd = y0-60;
+        }
         console.dir(d3.mouse(this));
         tooltip.style("display", "block"); //Makes visible, if hidden before
-        tooltip.attr("transform", "translate(" + x0 + ", " + (y0+15) + ")");        
+        tooltip.attr("transform", "translate(" + x0 + ", " + (yd) + ")");        
         var stockSym = d3.select(this)._groups[0][0]["__data__"][0].symbol;
         var x0 = x.invert(d3.mouse(this)[0]);
         var col = fetchCol(stockSym, x0);
