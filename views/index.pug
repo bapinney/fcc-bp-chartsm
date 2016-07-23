@@ -2,18 +2,26 @@ extends layout
 
 block content
     div(id="chart_title") Stocks
-    svg(id="chart")
+    div(id="svg_container")
+        div(id="sd_warning") stock data will be shown here, once drawn
+        svg(id="chart" style="display:none;")
     div(id="chart_caption") Stocks
-        button(id="button_fetch")
+        button(accesskey="f" id="button_fetch")
             i(class="fa fa-cloud-download" aria-hidden="true")
-            |  Fetch Data
+            |  
+            u F
+            |etch Data
         div(class="tooltip-wrapper disabled" data-title="Some stock data must be fetched before a chart can be drawn" data-placement="top" id="draw_warning")
-            button(id="button_draw" disabled)
+            button(accesskey="d" id="button_draw" disabled)
                 i(class="fa fa-line-chart" aria-hidden="true")
-                |  Draw Chart
+                |  
+                u D
+                |raw Chart
     div(id="stock_list" class="row")
         div(class="col-md-4" id="add_new")
-            input(id="input_add" type="text" placeholder="MSFT, GOOG, AAPL...")
-            button(id="button_add")
+            input(accesskey="s" title="Enter stock symbol    ctrl[+alt]+s" id="input_add" type="text" placeholder="MSFT, GOOG, AAPL...")
+            button(accesskey="a" id="button_add")
                 i(class="fa fa-plus-square" aria-hidden="true")
-                |  Add Stock
+                |  
+                u A
+                |dd Stock

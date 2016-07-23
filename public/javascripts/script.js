@@ -12,6 +12,9 @@ var cMargin;
 var cWidth;
 var cHeight;
 
+var ttWidth = 50; //Tooltip width
+var ttHeight = 50;
+
 var x;
 var xAxis;
 
@@ -78,6 +81,8 @@ $(function() { //Document ready
     });
     
     $("#button_draw").click(function() {
+        $("#sd_warning")[0].style.display = "none";
+        $("#chart")[0].style.display = "block";
         chartInit();
     })
     
@@ -150,6 +155,7 @@ $(function() { //Document ready
         newDiv.append('<span class="close">x</span>');
         var stockDiv = $('<div class="stock_name"></div>');
         stockDiv[0].innerText = symbol;
+        stockDiv[0].dataset.snid = symbol; //SNID = Stock Name ID, stored in HTML5 data-* attr
         newDiv.append(stockDiv);
         if (
             typeof chartData == "undefined" ||
@@ -192,6 +198,8 @@ var yMax;
 var interval;
 var intervalMultiple;
 var stockLine;
+
+var tooltip; //Remove when done testing and place inside code...
 
 var chartInit = function() {
     console.log("chartInit called");
@@ -310,12 +318,58 @@ var chartInit = function() {
         .attr("transform", "translate(" + (cMargin.left) + ", " + (0) + ")")
         .call(yAxis);
     
-    console.log("Drawing paths for stocks...");
+
+    var fetchCol = function(stockSym, x0) {
+        var xDate = new Date(x0);
+        if (typeof chartData[stockSym] !== "undefined") {
+            for (var i=0; i < chartData[stockSym].length; i++) {
+                if (new Date(chartData[stockSym][i].date) > xDate) {
+                    return chartData[stockSym][i];
+                }
+            }
+        }
+    };
     
-    var fooMo = function() {
-        var d3Ele = d3.select(this);
-        console.dir(d3Ele);
+    /**
+     * Provide UI feedback to the end-user on the stock he/she moused over on the chart
+     */
+    var stockAddUIFeedback = function() {
+        //D3 binds to the DOM the data it used to graph the selected element.  If we crawl back up to the __data__ property, we can determine which stock symbol the user is hovering over in the chart
+        var stockSym = d3.select(this)._groups[0][0]["__data__"][0].symbol;
+        var stockEle = $('[data-snid="' + stockSym + '"]')[0].parentElement;
+        tooltip.select("#tt_stocksym").text(stockSym);
+        $(stockEle).addClass("stockline_hover");
+    };
+    
+    var stockRemoveUIFeedback = function() {
+        //D3 binds to the DOM the data it used to graph the selected element.  If we crawl back up to the __data__ property, we can determine which stock symbol the user is hovering over in the chart
+        var stockSym = d3.select(this)._groups[0][0]["__data__"][0].symbol;
+        var stockEle = $('[data-snid="' + stockSym + '"]')[0].parentElement;
+        $(stockEle).removeClass("stockline_hover");
+        tooltip.style("display", "none");
+    };
+    
+    var stockTooltipFeedback = function() {
+        //This is the "X" value the cursor is hovered over.  Remember, from chartInit(), these are Date objects
+        var x0 = d3.mouse(this)[0];
+        var y0 = d3.mouse(this)[1];
+        console.dir(d3.mouse(this));
+        tooltip.style("display", "block"); //Makes visible, if hidden before
+        tooltip.attr("transform", "translate(" + x0 + ", " + (y0+15) + ")");        
+        var stockSym = d3.select(this)._groups[0][0]["__data__"][0].symbol;
+        var x0 = x.invert(d3.mouse(this)[0]);
+        var col = fetchCol(stockSym, x0);
+        console.dir(col);
+        var date = new Date(col.date);
+        var dateText = (date.getMonth() + 1) + "/" + date.getDate();
+        var ocText = "Op:" + parseFloat(col.open).toFixed(2) + " Cl:" + parseFloat(col.close).toFixed(2);
+        tooltip.select("#tt_date").text(dateText);
+        tooltip.select("#tt_oc").text(ocText);
+        //console.log(x0);
     }
+    
+    
+    console.log("Drawing paths for stocks...");
     
     for (var i=0; i<tickerSymbols.length; i++) {
         if (chartData[tickerSymbols[i]].length > 0) {
@@ -323,14 +377,41 @@ var chartInit = function() {
             chart.append("path")
             .datum(chartData[tickerSymbols[i]])
             .attr("class", "stock_line")
+            
             //Remember, we need to do a transform on the data, since everything else is also translated +50 on the xAxis
             .attr("transform", "translate("+ (cMargin.left) + ", " + (0) + ")")
             .attr("d", stockLine)
             .style("stroke", function(d) { return colors(i); })
-            .on("mouseover", fooMo);
-            ;
+            .on("mouseover", stockAddUIFeedback)
+            .on("mouseout", stockRemoveUIFeedback)
+            .on("mousemove", stockTooltipFeedback);
         }
     }
-
-
+    
+    // *** Info Tooltip ***
+    tooltip = chart.append("g").attr("style", "display: none;");
+    tooltip.append("rect")
+        .attr("class", "hover_tip")
+        .attr("width", ttWidth)
+        .attr("height", ttHeight)
+        .attr("rx", "20")
+        .attr("ry", "20");
+    tooltip.append("text")
+        .attr("class", "hover_tiptext")
+        .attr("id", "tt_stocksym")
+        .attr("fill", "#000")
+        .attr("dx", "1em")
+        .attr("dy", "1em");
+    tooltip.append("text")
+        .attr("class", "hover_tiptext")
+        .attr("id", "tt_date")
+        .attr("fill", "#000")
+        .attr("dx", "1em")
+        .attr("dy", "2em");
+    tooltip.append("text")
+        .attr("class", "hover_tiptext")
+        .attr("id", "tt_oc")
+        .attr("fill", "#000")
+        .attr("dx", "1em")
+        .attr("dy", "3em");
 };

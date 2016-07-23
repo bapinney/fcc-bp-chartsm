@@ -90,7 +90,6 @@ main {
 #chart {
     border: 1px dashed rgba(0,0,0,0.2);
     display: block; /* Useful if the container is an SVG instead of a DIV */
-    margin-bottom: 20px;
     min-height: 300px;
     width: 100%; /* Useful if container is an SVG instead of a DIV */
 }
@@ -112,6 +111,31 @@ main {
     letter-spacing: 10px;
 }
 
+.hover_tip {
+    fill: white;
+    opacity: .4;
+    stroke: black;
+    padding: 10px;
+    position: absolute; /* Does not create space for this element */
+    width: 150px;
+}
+
+.hover_tiptext {
+    color: black;
+    fill: black;
+    font-size: 11px;
+    stroke: black;
+}
+
+#sd_warning {
+    cursor: default;
+    -webkit-touch-callout: none; 
+    -webkit-user-select: none; 
+    -khtml-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none; 
+}
 
 #stock_list > div {
     border: 1px solid black;
@@ -126,6 +150,11 @@ main {
 
 #stock_list > div:hover {
     box-shadow: 0px 0px 2px 1px black;
+}
+
+#stock_list > div.stockline_hover {
+    background-color: rgba(255, 255, 0, .25);
+    transition: all 50ms ease-in-out;
 }
 
 #stock_list .close {
@@ -187,12 +216,33 @@ main {
 
 .stock_line {
     fill: none;
-    stroke-width: 1.8px;
+    stroke-width: 4px;
+}
+
+.stock_line:hover {
+    fill: none;
+    stroke-width: 6px;
 }
 
 .stock_name {
     font-family: 'Space Mono', monospace;
     font-size: 24px;
+}
+
+#svg_container {
+    border: 1px dashed rgba(0,0,0,0.2);
+    display: flex; /* Useful if the container is an SVG instead of a DIV */
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    min-height: 300px;
+    width: 100%; /* Useful if container is an SVG instead of a DIV */
+}
+
+#svg_container > div {
+    font-size: 16px;
+    opacity: .5;
+    letter-spacing: 0.5em;
 }
 
 .tooltip > .tooltip-inner {
