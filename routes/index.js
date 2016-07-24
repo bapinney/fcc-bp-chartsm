@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var chalk = require('chalk');
 console.log(chalk.bgBlue.white("Initializing Socket.IO..."));
-var io = require("socket.io")(3000);
+var io = require('socket.io').listen(Number(process.env.PORT));
 var yahooFinance = require('yahoo-finance');
 var mongoose = require('mongoose');
 var Stocklist = require('../models/stocklist.js');

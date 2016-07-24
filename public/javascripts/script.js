@@ -42,7 +42,7 @@ $(function() { //Document ready
         }
     });
     
-    socket = io.connect('ws://localhost:3000');
+    socket = io.connect('https://' + document.location.hostname);
     
     socket.on("stockadd", function(stockSymbol) {
         console.log(`Somebody just added a stock: ${stockSymbol}`);
