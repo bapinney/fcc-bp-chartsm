@@ -17,9 +17,7 @@ var yahooFinance = require('yahoo-finance');
 var mongoose = require('mongoose');
 var stocklistSchema = require('./models/stocklist.js')
 
-console.log(chalk.bgYellow.black("Loading routes..."));
-var routes = require('./routes/index');
-var users = require('./routes/users');
+
 
 console.log(chalk.bgBlue.white("Initializing Express..."));
 var app = express();
@@ -27,7 +25,15 @@ if (process.env.APP_ENV === "development") {
     console.log(chalk.bgBlue.white("App environment is DEVELOPMENT"));
     app.set('env', 'development');
 }
-var http = require('http').Server(app);
+var server = require('http').createServer(app);
+var io = require('socket.io')(server)
+console.log("Assigning " + chalk.cyan("io") + " to " + chalk.cyan("global.io") + "...");
+global.io = io;
+console.log(chalk.bgYellow.black("Loading routes..."));
+var routes = require('./routes/index');
+var users = require('./routes/users');
+
+//var http = require('http').Server(app);
 
 // view engine setup
 

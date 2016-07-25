@@ -42,7 +42,9 @@ $(function() { //Document ready
         }
     });
     
-    socket = io.connect('https://' + document.location.hostname);
+    var sioConStr = document.location.protocol + "//" + document.location.host;
+    
+    socket = io.connect(sioConStr);
     
     socket.on("stockadd", function(stockSymbol) {
         console.log(`Somebody just added a stock: ${stockSymbol}`);
